@@ -1,0 +1,70 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+// 도형 바꾸기 프레임
+public class ShapeSwitcher extends JFrame {
+    private ShapePanel shapePanel;
+    private Timer timer;
+    private int shapeIndex = 0; // 0: 삼각형, 1: 사각형, 2: 둥근사각형
+
+    public ShapeSwitcher() {
+        setTitle("2초마다 도형 바꾸기");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 400);
+        setLocationRelativeTo(null);
+
+        shapePanel = new ShapePanel();
+        add(shapePanel);
+
+        // 2초(2000ms)마다 도형 변경
+        timer = new Timer(2000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                shapeIndex = (shapeIndex + 1) % 3;
+                shapePanel.setShape(shapeIndex);
+            }
+        });
+
+        timer.start();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new ShapeSwitcher().setVisible(true);
+        });
+    }
+}
+
+// 도형을 그리는 패널
+class ShapePanel extends JPanel {
+    private int shapeIndex = 0; // 0: 삼각형, 1: 사각형, 2: 둥근사각형
+
+    public void setShape(int index) {
+        this.shapeIndex = index;
+        repaint(); // 도형이 바뀌면 다시 그리기
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(Color.BLUE);
+        Graphics2D g2 = (Graphics2D) g;
+
+        int x = getWidth() / 2 - 50;
+        int y = getHeight() / 2 - 50;
+
+        switch (shapeIndex) {
+            case 0: // 삼각형
+                int[] xPoints = { x + 50, x, x + 100 };
+                int[] yPoints = { y, y + 100, y + 100 };
+                g2.drawPolygon(xPoints, yPoints, 3);
+                break;
+            case 1: // 사각형
+                g2.drawRect(x, y, 100, 100);
+                break;
+            case 2: // 둥근사각형
+                g2.drawRoundRect(x, y, 100, 100, 30, 30);
+                break;
+        }
+    }
+}
